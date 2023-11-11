@@ -1,0 +1,226 @@
+{
+  "version": 3,
+  "targets": {
+    "net6.0": {
+      "MonoGame.Content.Builder.Task/3.8.1.303": {
+        "type": "package",
+        "build": {
+          "build/MonoGame.Content.Builder.Task.props": {},
+          "build/MonoGame.Content.Builder.Task.targets": {}
+        }
+      },
+      "MonoGame.Framework.DesktopGL/3.8.1.303": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/MonoGame.Framework.dll": {}
+        },
+        "runtime": {
+          "lib/net6.0/MonoGame.Framework.dll": {}
+        },
+        "build": {
+          "build/MonoGame.Framework.DesktopGL.targets": {}
+        },
+        "runtimeTargets": {
+          "runtimes/linux-x64/native/libSDL2-2.0.so.0": {
+            "assetType": "native",
+            "rid": "linux-x64"
+          },
+          "runtimes/linux-x64/native/libopenal.so.1": {
+            "assetType": "native",
+            "rid": "linux-x64"
+          },
+          "runtimes/osx/native/libSDL2.dylib": {
+            "assetType": "native",
+            "rid": "osx"
+          },
+          "runtimes/osx/native/libopenal.1.dylib": {
+            "assetType": "native",
+            "rid": "osx"
+          },
+          "runtimes/win-x64/native/SDL2.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/soft_oal.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x86/native/SDL2.dll": {
+            "assetType": "native",
+            "rid": "win-x86"
+          },
+          "runtimes/win-x86/native/soft_oal.dll": {
+            "assetType": "native",
+            "rid": "win-x86"
+          }
+        }
+      },
+      "OpenCL.Net/2.2.9": {
+        "type": "package",
+        "compile": {
+          "lib/net40/OpenCL.Net.dll": {}
+        },
+        "runtime": {
+          "lib/net40/OpenCL.Net.dll": {}
+        },
+        "build": {
+          "build/net40/OpenCL.Net.targets": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "MonoGame.Content.Builder.Task/3.8.1.303": {
+      "sha512": "9Ilzzje62LhWElbPNEl7vh7XsRSbze+lvCJdZtTZUGu48FRgvYN6THURwIB9PN98EI33/Wnf6iuShNUtD7hL4Q==",
+      "type": "package",
+      "path": "monogame.content.builder.task/3.8.1.303",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "build/MonoGame.Content.Builder.Task.props",
+        "build/MonoGame.Content.Builder.Task.targets",
+        "monogame.content.builder.task.3.8.1.303.nupkg.sha512",
+        "monogame.content.builder.task.nuspec"
+      ]
+    },
+    "MonoGame.Framework.DesktopGL/3.8.1.303": {
+      "sha512": "eGYhqn0n1olk8MNYeE9EuBmoNNECN1T18rPMaQpkzsEQ0H3nVyFPXC+uCo78v5pi5juQpJ3PSFnSkjzZJ1U58A==",
+      "type": "package",
+      "path": "monogame.framework.desktopgl/3.8.1.303",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "build/MonoGame.Framework.DesktopGL.targets",
+        "lib/net6.0/MonoGame.Framework.dll",
+        "monogame.framework.desktopgl.3.8.1.303.nupkg.sha512",
+        "monogame.framework.desktopgl.nuspec",
+        "runtimes/linux-x64/native/libSDL2-2.0.so.0",
+        "runtimes/linux-x64/native/libopenal.so.1",
+        "runtimes/osx/native/libSDL2.dylib",
+        "runtimes/osx/native/libopenal.1.dylib",
+        "runtimes/win-x64/native/SDL2.dll",
+        "runtimes/win-x64/native/soft_oal.dll",
+        "runtimes/win-x86/native/SDL2.dll",
+        "runtimes/win-x86/native/soft_oal.dll"
+      ]
+    },
+    "OpenCL.Net/2.2.9": {
+      "sha512": "88xksmTwopVt7UN8Kdpry3sIKcEM5sbvIKJYYwj8MGOvnpqS50N9HaKBD/oXae/1pKyuj2/Ipo1eid7yQ18B1Q==",
+      "type": "package",
+      "path": "opencl.net/2.2.9",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "build/net40/OpenCL.Net.targets",
+        "lib/net40/OpenCL.Net.dll",
+        "opencl.net.2.2.9.nupkg.sha512",
+        "opencl.net.nuspec"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net6.0": [
+      "MonoGame.Content.Builder.Task >= 3.8.1.303",
+      "MonoGame.Framework.DesktopGL >= 3.8.1.303",
+      "OpenCL.Net >= 2.2.9"
+    ]
+  },
+  "packageFolders": {
+    "/home/lena/.nuget/packages/": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "/home/lena/programming/c#/FluidSim/FluidSim.csproj",
+      "projectName": "FluidSim",
+      "projectPath": "/home/lena/programming/c#/FluidSim/FluidSim.csproj",
+      "packagesPath": "/home/lena/.nuget/packages/",
+      "outputPath": "/home/lena/programming/c#/FluidSim/obj/",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "/home/lena/.nuget/NuGet/NuGet.Config"
+      ],
+      "originalTargetFrameworks": [
+        "net6.0"
+      ],
+      "sources": {
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "projectReferences": {}
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      }
+    },
+    "frameworks": {
+      "net6.0": {
+        "targetAlias": "net6.0",
+        "dependencies": {
+          "MonoGame.Content.Builder.Task": {
+            "target": "Package",
+            "version": "[3.8.1.303, )"
+          },
+          "MonoGame.Framework.DesktopGL": {
+            "target": "Package",
+            "version": "[3.8.1.303, )"
+          },
+          "OpenCL.Net": {
+            "target": "Package",
+            "version": "[2.2.9, )"
+          }
+        },
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Ref",
+            "version": "[6.0.24, 6.0.24]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Host.linux-x64",
+            "version": "[6.0.24, 6.0.24]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Ref",
+            "version": "[6.0.24, 6.0.24]"
+          }
+        ],
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/7.0.113/RuntimeIdentifierGraph.json"
+      }
+    }
+  },
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'OpenCL.Net 2.2.9' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net6.0'. This package may not be fully compatible with your project.",
+      "libraryId": "OpenCL.Net",
+      "targetGraphs": [
+        "net6.0"
+      ]
+    }
+  ]
+}
