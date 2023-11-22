@@ -11,13 +11,15 @@ namespace FluidSim {
     public bool Colliding { get; set; }
     public float Radius { get; }
     public float Restitution { get; set; } 
+    public float Mass { get; set; }
 
-    public Circle(Vector2 position, Color color, Vector2 velocity, float radius, float restitution) {
+    public Circle(Vector2 position, Color color, Vector2 velocity, float radius, float restitution, float mass) {
       Position = position;
       Color = color;
       Velocity = velocity;
       Radius = radius;
       Restitution = restitution;
+      Mass = mass;
     }
     
     // Check if this circle collides with another circle
@@ -50,6 +52,7 @@ namespace FluidSim {
     private int _radiusOfCircles = 5;
     private float _gravity = 100f;
     private float _restitution = 0.90f;
+    private float _mass = 1f;
     private Circle[] _circles;
     private Circle _playerCircle; // Array to store circle objects
 
@@ -62,12 +65,12 @@ namespace FluidSim {
     protected override void Initialize() {
       // Initialize circle objects
       _circles = new Circle[_numberOfCircles];
-      _playerCircle = new Circle(new Vector2(0, 0), Color.Black, new Vector2(0), 10, 0);
+      _playerCircle = new Circle(new Vector2(0, 0), Color.Black, new Vector2(0), 10, 0, 0f);
       Random random = new Random();
       for (int i = 0; i < _numberOfCircles; i++) {
         Vector2 position = new Vector2(random.Next(0, _graphics.PreferredBackBufferWidth/10)*10, random.Next(0, _graphics.PreferredBackBufferHeight/10)*10);
         Color color = new Color(random.Next(256), random.Next(256), random.Next(256)); // You can set initial color here
-        _circles[i] = new Circle(position, color, new Vector2(random.Next(-10, 10),random.Next(0, 10)), _radiusOfCircles, _restitution);
+        _circles[i] = new Circle(position, color, new Vector2(random.Next(-10, 10),random.Next(0, 10)), _radiusOfCircles, _restitution, _mass);
         
       }
       
@@ -106,8 +109,11 @@ namespace FluidSim {
 
     protected override void Update(GameTime gameTime) {
       if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
-          Keyboard.GetState().IsKeyDown(Keys.Escape))
+          Keyboard.GetState().IsKeyDown(Keys.Escape)) {
+        UnloadContent();
         Exit();
+      }
+        
       _dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
       // Update your fluid simulation logic here
       _playerCircle.Position = Mouse.GetState().Position.ToVector2();
@@ -145,21 +151,67 @@ namespace FluidSim {
       base.Draw(gameTime);
     }
     
-    private void CheckCollisions(Circle currentCircle) {
-      foreach (Circle otherCircle in _circles) {
-        if (currentCircle != otherCircle && currentCircle.CollidesWith(otherCircle)) {
-          // Handle collision as needed
-          // For example, change colors or modify velocities
-          currentCircle.Colliding = true;
-          otherCircle.Colliding = true;
+    protected override void UnloadContent()
+    {
+      _circleTexture.Dispose();
+      // Dispose of other resources if needed
+
+      base.UnloadContent();
+    }
+    
+    
+    
+    private void CheckCollisions(Circle currentCircle)
+    {
+      foreach (Circle otherCircle in _circles)
+      {
+        if (currentCircle != otherCircle && currentCircle.CollidesWith(otherCircle))
+        {
+          HandleCollision(currentCircle, otherCircle);
         }
       }
     }
-    
-    private void CheckCollisions(Circle currentCircle, Circle secondCircle) {
-      if (currentCircle != secondCircle && currentCircle.CollidesWith(secondCircle)) {
-        currentCircle.Colliding = true;
+    private void CheckCollisions(Circle currentCircle, Circle otherCircle)
+    {
+      if (currentCircle != otherCircle && currentCircle.CollidesWith(otherCircle)) {
+        HandleCollision(currentCircle, otherCircle);
       }
+    }
+
+    private void HandleCollision(Circle circle1, Circle circle2)
+    {
+      // Calculate relative velocity
+      Vector2 relativeVelocity = circle2.Velocity - circle1.Velocity;
+
+      // Calculate the normal vector (direction from circle1 to circle2)
+      Vector2 normal = Vector2.Normalize(circle2.Position - circle1.Position);
+
+      // Calculate the relative velocity along the normal
+      float relativeSpeed = Vector2.Dot(relativeVelocity, normal);
+
+      // Calculate the impulse (change in momentum)
+      float impulse = (2.0f * relativeSpeed) / (circle1.Mass + circle2.Mass);
+
+      // Apply the impulse to update velocities
+      circle1.Velocity = circle1.Velocity + impulse * circle2.Mass * normal;
+      circle2.Velocity = circle2.Velocity - impulse * circle1.Mass * normal;
+
+      // Apply restitution to simulate elasticity
+      circle1.Velocity *= circle1.Restitution;
+      circle2.Velocity *= circle2.Restitution;
+
+      // Optionally, you may want to move circles apart to avoid continuous collisions
+      SeparateCircles(circle1, circle2);
+    }
+
+    private void SeparateCircles(Circle circle1, Circle circle2)
+    {
+      // Move circles apart to avoid overlap
+      float overlap = circle1.Radius + circle2.Radius - Vector2.Distance(circle1.Position, circle2.Position);
+      Vector2 separation = Vector2.Normalize(circle1.Position - circle2.Position) * overlap * 0.5f;
+
+      circle1.Position += separation;
+      circle2.Position -= separation;
     }
     private void CheckBorderCollisions(Circle circle) {
       // Adjust positions or velocities based on window borders

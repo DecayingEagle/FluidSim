@@ -66,14 +66,6 @@
             {
               "name": "Microsoft.AspNetCore.App.Ref",
               "version": "[6.0.24, 6.0.24]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Host.linux-x64",
-              "version": "[6.0.24, 6.0.24]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[6.0.24, 6.0.24]"
             }
           ],
           "frameworkReferences": {
