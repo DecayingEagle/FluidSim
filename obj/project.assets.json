@@ -128,19 +128,19 @@
     ]
   },
   "packageFolders": {
-    "/home/lena/.nuget/packages/": {}
+    "C:\\Users\\roza0\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/lena/programming/c#/FluidSim/FluidSim.csproj",
+      "projectUniqueName": "C:\\Users\\roza0\\RiderProjects\\FluidSim\\FluidSim.csproj",
       "projectName": "FluidSim",
-      "projectPath": "/home/lena/programming/c#/FluidSim/FluidSim.csproj",
-      "packagesPath": "/home/lena/.nuget/packages/",
-      "outputPath": "/home/lena/programming/c#/FluidSim/obj/",
+      "projectPath": "C:\\Users\\roza0\\RiderProjects\\FluidSim\\FluidSim.csproj",
+      "packagesPath": "C:\\Users\\roza0\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\roza0\\RiderProjects\\FluidSim\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/lena/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\roza0\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net6.0"
@@ -191,7 +191,19 @@
         "downloadDependencies": [
           {
             "name": "Microsoft.AspNetCore.App.Ref",
-            "version": "[6.0.24, 6.0.24]"
+            "version": "[6.0.25, 6.0.25]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Host.win-x64",
+            "version": "[6.0.25, 6.0.25]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Ref",
+            "version": "[6.0.25, 6.0.25]"
+          },
+          {
+            "name": "Microsoft.WindowsDesktop.App.Ref",
+            "version": "[6.0.25, 6.0.25]"
           }
         ],
         "frameworkReferences": {
@@ -199,7 +211,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/7.0.113/RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Users\\roza0\\.dotnet\\sdk\\8.0.100\\RuntimeIdentifierGraph.json"
       }
     }
   },

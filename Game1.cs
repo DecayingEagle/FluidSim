@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -46,15 +49,27 @@ namespace FluidSim {
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
     private Texture2D _circleTexture; // Texture for the circle
-    private float _dt;
+    private TimeSpan _dt;
 
-    private int _numberOfCircles = 100; // Set the desired number of circles
-    private int _radiusOfCircles = 5;
-    private float _gravity = 100f;
-    private float _restitution = 0.90f;
-    private float _mass = 1f;
-    private Circle[] _circles;
+    private int _numberOfCircles = 5000; // Set the desired number of circles
+    private int _radiusOfCircles = 4;
+    private float _gravity = 500f;
+    private float _restitution = 0.95f;
+    private float _mass = 1.0f;
+    private List<Circle> _circles;
     private Circle _playerCircle; // Array to store circle objects
+    
+    [Flags]
+    private enum MouseButtonsPressed {
+      None = 0b_00,
+      Left = 0b_10,
+      Right = 0b_01
+    }
+
+    private MouseButtonsPressed _pressed;
+#if DEBUG
+    private static bool _debugFlag = true;
+#endif
 
     public Game1() {
       _graphics = new GraphicsDeviceManager(this);
@@ -64,23 +79,19 @@ namespace FluidSim {
 
     protected override void Initialize() {
       // Initialize circle objects
-      _circles = new Circle[_numberOfCircles];
+      _circles = new List<Circle>(_numberOfCircles);
       _playerCircle = new Circle(new Vector2(0, 0), Color.Black, new Vector2(0), 10, 0, 0f);
       Random random = new Random();
       for (int i = 0; i < _numberOfCircles; i++) {
         Vector2 position = new Vector2(random.Next(0, _graphics.PreferredBackBufferWidth/10)*10, random.Next(0, _graphics.PreferredBackBufferHeight/10)*10);
         Color color = new Color(random.Next(256), random.Next(256), random.Next(256)); // You can set initial color here
-        _circles[i] = new Circle(position, color, new Vector2(random.Next(-10, 10),random.Next(0, 10)), _radiusOfCircles, _restitution, _mass);
-        
+        _circles.Add(new Circle(position, color, new Vector2(random.Next(-10, 10),random.Next(0, 10)), _radiusOfCircles, _restitution, _mass));
       }
-      
       base.Initialize();
     }
 
     protected override void LoadContent() {
       _spriteBatch = new SpriteBatch(GraphicsDevice);
-
-      // Create a circle texture with a fixed radius of 5
       _circleTexture = CreateCircleTexture(_radiusOfCircles);
     }
 
@@ -107,33 +118,32 @@ namespace FluidSim {
       return texture;
     }
 
-    protected override void Update(GameTime gameTime) {
+    protected override async void Update(GameTime gameTime) {
+
       if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
           Keyboard.GetState().IsKeyDown(Keys.Escape)) {
         UnloadContent();
         Exit();
-      }
-        
-      _dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
-      // Update your fluid simulation logic here
-      _playerCircle.Position = Mouse.GetState().Position.ToVector2();
-      foreach (Circle circle in _circles) {
-        CheckBorderCollisions(circle);
-        CheckCollisions(circle);
-        CheckCollisions(circle, _playerCircle);
-        circle.Velocity += new Vector2(0, _gravity * _dt);
-        if (circle.Colliding) {
-          circle.Velocity = -circle.Velocity * circle.Restitution;
-        }
-        circle.Position += circle.Velocity*_dt; // Update gravity
-        
-        
+      } else if(this.IsActive | _debugFlag) await ComputeCirclesAsyncParallel(_circles);
+
+      if (Mouse.GetState().LeftButton == ButtonState.Released) {
+        _pressed &= ~MouseButtonsPressed.Left;
       }
 
-      foreach (Circle circle in _circles) {
-        circle.Colliding = false;
+      if ((Mouse.GetState().LeftButton == ButtonState.Pressed)) {
+        _pressed |= MouseButtonsPressed.Left;
       }
+      
+      if (_pressed.HasFlag(MouseButtonsPressed.Left)) {
+        _circles.Remove(_playerCircle);
+        SpawnCircleOnClick(Mouse.GetState().X, Mouse.GetState().Y);
+      }
+
+      // Update your fluid simulation logic here
+      _playerCircle.Position = Mouse.GetState().Position.ToVector2();
+      
       base.Update(gameTime);
+      _dt = gameTime.ElapsedGameTime;
     }
 
     protected override void Draw(GameTime gameTime) {
@@ -158,8 +168,26 @@ namespace FluidSim {
 
       base.UnloadContent();
     }
-    
-    
+
+    private async Task<List<Circle>> ComputeCirclesAsyncParallel(List<Circle> list) {
+      await Task.Run(() => {
+        Parallel.ForEach(list, circle => {
+          CheckBorderCollisions(circle);
+          CheckCollisions(circle);
+          circle.Velocity += new Vector2(0, _gravity * (float)_dt.TotalSeconds);
+          if (circle.Colliding) {
+            circle.Velocity = -circle.Velocity * circle.Restitution;
+          }
+          circle.Position += circle.Velocity*(float)_dt.TotalSeconds; // Update gravity
+        });
+      });
+      
+      foreach (Circle circle in list) {
+        circle.Colliding = false;
+      }
+
+      return list;
+    }
     
     private void CheckCollisions(Circle currentCircle)
     {
@@ -171,6 +199,8 @@ namespace FluidSim {
         }
       }
     }
+    
+    //TODO: Possibly have to remove this method later on.
     private void CheckCollisions(Circle currentCircle, Circle otherCircle)
     {
       if (currentCircle != otherCircle && currentCircle.CollidesWith(otherCircle)) {
@@ -235,6 +265,12 @@ namespace FluidSim {
         circle.Position = new Vector2(circle.Position.X, GraphicsDevice.Viewport.Height - circle.Radius * 2);
         circle.Velocity = new Vector2(circle.Velocity.X, -Math.Abs(circle.Velocity.Y) * circle.Restitution); // Reverse the Y velocity
       }
+    }
+
+    private void SpawnCircleOnClick(int x, int y) {
+      Debug.WriteLine(x);
+      Debug.WriteLine(y);
+      _circles.Add(new Circle(new Vector2(x, y), Color.Red, new Vector2(0), _radiusOfCircles, _restitution, _mass));
     }
   }
 }
