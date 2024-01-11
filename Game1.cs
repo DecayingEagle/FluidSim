@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -46,20 +47,25 @@ namespace FluidSim {
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
     private Texture2D _circleTexture; // Texture for the circle
-    private float _dt;
+    private decimal _dt;
+    private decimal _lastUpdate;
 
-    private int _numberOfCircles = 100; // Set the desired number of circles
-    private int _radiusOfCircles = 5;
-    private float _gravity = 100f;
-    private float _restitution = 0.90f;
-    private float _mass = 1f;
+    private int _numberOfCircles = 150; // Set the desired number of circles
+    private int _radiusOfCircles = 10;
+    private float _gravity = 10f;
+    private float _restitution = 0.95f;
+    private float _mass = 100f;
     private Circle[] _circles;
     private Circle _playerCircle; // Array to store circle objects
+    private int _frameCount;
+    private float _frameRate;
+    private decimal[] _fpsArray = new Decimal[60];
+    private DateTime startTime;
 
     public Game1() {
       _graphics = new GraphicsDeviceManager(this);
       Content.RootDirectory = "Content";
-      IsMouseVisible = true;
+      IsMouseVisible = false;
     }
 
     protected override void Initialize() {
@@ -70,7 +76,7 @@ namespace FluidSim {
       for (int i = 0; i < _numberOfCircles; i++) {
         Vector2 position = new Vector2(random.Next(0, _graphics.PreferredBackBufferWidth/10)*10, random.Next(0, _graphics.PreferredBackBufferHeight/10)*10);
         Color color = new Color(random.Next(256), random.Next(256), random.Next(256)); // You can set initial color here
-        _circles[i] = new Circle(position, color, new Vector2(random.Next(-10, 10),random.Next(0, 10)), _radiusOfCircles, _restitution, _mass);
+        _circles[i] = new Circle(position, color, new Vector2((float)random.Next(-1, 1)/1000,(float)random.Next(-1, 1)/1000), _radiusOfCircles, _restitution, _mass);
         
       }
       
@@ -107,48 +113,86 @@ namespace FluidSim {
       return texture;
     }
 
-    protected override void Update(GameTime gameTime) {
-      if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
-          Keyboard.GetState().IsKeyDown(Keys.Escape)) {
-        UnloadContent();
-        Exit();
-      }
-        
-      _dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
-      // Update your fluid simulation logic here
-      _playerCircle.Position = Mouse.GetState().Position.ToVector2();
-      foreach (Circle circle in _circles) {
-        CheckBorderCollisions(circle);
-        CheckCollisions(circle);
-        CheckCollisions(circle, _playerCircle);
-        circle.Velocity += new Vector2(0, _gravity * _dt);
-        if (circle.Colliding) {
-          circle.Velocity = -circle.Velocity * circle.Restitution;
+    protected override void Update(GameTime gameTime)
+    {
+        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
+            Keyboard.GetState().IsKeyDown(Keys.Escape))
+        {
+            Exit();
         }
-        circle.Position += circle.Velocity*_dt; // Update gravity
+      
+        DateTime endTime = DateTime.Now;
+        TimeSpan deltaTime = endTime - startTime;
+        _dt = Convert.ToDecimal(deltaTime.TotalSeconds);
+        startTime = DateTime.Now;
+        // Your operations here
         
-        
-      }
 
-      foreach (Circle circle in _circles) {
-        circle.Colliding = false;
-      }
-      base.Update(gameTime);
+        // Update your fluid simulation logic here
+        _playerCircle.Position = Mouse.GetState().Position.ToVector2();
+        foreach (Circle circle in _circles)
+        {
+            CheckBorderCollisions(circle);
+            CheckCollisions(circle);
+            CheckCollisions(circle, _playerCircle);
+            circle.Velocity += new Vector2(0, _gravity * (float)_dt);
+            if (circle.Colliding)
+            {
+                circle.Velocity = -circle.Velocity * circle.Restitution;
+            }
+            circle.Position += circle.Velocity * (float)_dt; // Update gravity
+        }
+
+        foreach (Circle circle in _circles)
+        {
+            circle.Colliding = false;
+        }
+        
+        
+        // Update FPS counter
+        _frameCount++;
+        
+        decimal fps = 1m / _dt ;
+        _fpsArray[_frameCount-1] = fps;
+        _frameRate = (float)Math.Round(_fpsArray.Average(), 7);
+        if (_frameCount >= 60) // we calculate FPS every 60 frames
+        {
+          _frameCount = 0; // reset frameCount
+        }
+        base.Update(gameTime);
     }
 
-    protected override void Draw(GameTime gameTime) {
-      GraphicsDevice.Clear(Color.CornflowerBlue);
+    protected override void Draw(GameTime gameTime)
+    {
+        GraphicsDevice.Clear(Color.CornflowerBlue);
 
-      _spriteBatch.Begin();
+        _spriteBatch.Begin();
 
-      // Draw circles
-      foreach (Circle circle in _circles) {
-        _spriteBatch.Draw(_circleTexture, circle.Position, circle.Color);
-      }
-      _spriteBatch.Draw(_circleTexture,_playerCircle.Position,_playerCircle.Color);
-      _spriteBatch.End();
+        // Draw circles
+        foreach (Circle circle in _circles)
+        {
+            _spriteBatch.Draw(_circleTexture, circle.Position, circle.Color);
+        }
+        _spriteBatch.Draw(_circleTexture, _playerCircle.Position, _playerCircle.Color);
 
-      base.Draw(gameTime);
+        _spriteBatch.End();
+
+        // Draw FPS counter
+        _spriteBatch.Begin();
+        DrawFpsCounter();
+        _spriteBatch.End();
+
+        base.Draw(gameTime);
+    }
+
+    private void DrawFpsCounter()
+    {
+        string fps = $"FPS: {_frameRate}\n";
+        _spriteBatch.DrawString(
+            Content.Load<SpriteFont>("DefaultFont"),
+            fps,
+            new Vector2(10, 10),
+            Color.White);
     }
     
     protected override void UnloadContent()
